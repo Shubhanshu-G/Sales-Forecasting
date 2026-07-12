@@ -1,12 +1,14 @@
 # Superstore Sales Performance & Demand Forecasting Dashboard
 
+[🚀 Live Demo on Streamlit](https://slaesforecasting.streamlit.app/)
+
 An end-to-end operational sales intelligence and demand forecasting pipeline for a commercial retail superstore. This system converts historical transaction records (train.csv) into a modular, production-ready Streamlit analytics application.
 
 ---
 
 ## Executive Summary & Business Relevance
 
-In commercial retail, optimizing supply chains requires balancing stock levels against customer demand. Under-stocking high-value items leads to immediate revenue loss, while over-stocking slow-moving items ties up working capital. 
+In commercial retail, optimizing supply chains requires balancing stock levels against customer demand. Under-stocking high-value items leads to immediate revenue loss, while over-stocking slow-moving items ties up working capital.
 
 This project addresses these challenges by applying statistical decomposition, multi-model forecasting, anomaly isolation, and K-Means product segmentation on four years (2015–2018) of historical transactional records. The results are deployed in a Tableau/Power BI style, flat-text analytics dashboard designed for inventory planners and executive decision-makers.
 
@@ -15,14 +17,18 @@ This project addresses these challenges by applying statistical decomposition, m
 ## 📋 Evaluation Criteria & System Implementation
 
 ### 1. Time Series Analysis & Decomposition
+
 To identify structural demand components, raw transaction sales are aggregated to weekly and monthly frequencies. We apply **multiplicative classical decomposition**:
 $$\text{Sales}_t = \text{Trend}_t \times \text{Seasonality}_t \times \text{Residual}_t$$
+
 - **Trend**: Long-term upward movement, showing consistent annual revenue growth.
 - **Seasonality**: Highly recurrent Q4 spike (peaking in September, November, and December) driven by corporate holiday shopping cycles.
 - **Residuals**: Random fluctuations and supply shocks, which are analyzed in the anomaly module.
 
 ### 2. Time Series Forecasting (All 3 Models)
+
 We implement and serialize three distinct modeling methodologies to capture different signal types:
+
 1. **SARIMA (Seasonal Autoregressive Integrated Moving Average)**:
    - **Parameters**: $\text{SARIMAX}(1,0,0) \times (0,0,0)_{12}$ fit on monthly sales.
    - **Role**: Serves as a linear statistical baseline modeling auto-regressive properties of the sales timeline.
@@ -33,6 +39,7 @@ We implement and serialize three distinct modeling methodologies to capture diff
    - **Role**: Captures non-linear feature interactions and localized shocks.
 
 ### 3. Model Comparison & Justified Recommendation
+
 Models are evaluated on a 3-month holdout test set (October – December 2018):
 
 | Model | Mean Absolute Error (MAE) | Root Mean Squared Error (RMSE) | MAPE (%) | $R^2$ Score | Recommendation |
@@ -44,15 +51,20 @@ Models are evaluated on a 3-month holdout test set (October – December 2018):
 - **Winner Selection**: **Tuned XGBoost** is recommended for production. It achieves the lowest forecast error (MAE of $\$13,907.70$, representing a $45\%$ improvement over SARIMA) and is the only model achieving a positive $R^2$ score ($0.176$), proving it successfully captures the high-volatility seasonal demand spikes in Q4.
 
 ### 4. Double-Method Anomaly Detection
+
 To isolate revenue surges and operational disruptions, we employ two concurrent methods:
+
 1. **Isolation Forest (Global)**: An unsupervised algorithm isolating anomalous weekly sales sums by randomly partitioning feature values across the full dataset distribution.
 2. **Rolling Z-Score (Local)**: Identifies week-over-week surges deviating by $>2$ standard deviations from the rolling 8-week moving average.
+
 - **Key Finding (Overlap on 22-Mar-2015)**: The week ending **22 March 2015** is the only date flagged by both models. This intersection isolates a major sales spike ($\$11,543.60$) that is both a global extreme and a sharp local departure from the surrounding trend.
 
 ### 5. Product Demand Segmentation & K-Means Clustering
-To replace arbitrary category boundaries, we aggregate four operational features for each product sub-category: Total Sales, Order Volume, Sales Volatility (Standard Deviation), and Year-over-Year (YoY) Sales Growth. 
+
+To replace arbitrary category boundaries, we aggregate four operational features for each product sub-category: Total Sales, Order Volume, Sales Volatility (Standard Deviation), and Year-over-Year (YoY) Sales Growth.
 
 Data is scaled using `StandardScaler` and projected into 2D space using **Principal Component Analysis (PCA)**. We apply **K-Means clustering** ($k=3$, validated by Elbow and Silhouette methods) to segment products:
+
 1. **Cluster 0: Low-Volume, Stable Demand** (e.g., Envelopes, Labels, Fasteners):
    - *Strategy*: Apply Just-in-Time (JIT) replenishment to minimize holding costs.
 2. **Cluster 1: High-Volume, Growing Demand** (e.g., Copiers, Phones, Accessories):
@@ -61,7 +73,9 @@ Data is scaled using `StandardScaler` and projected into 2D space using **Princi
    - *Strategy*: Maintain flexible, demand-driven scheduling and coordinate promotions with Q4 seasonal peaks.
 
 ### 6. Streamlit Dashboard Architecture & Custom Theme Adaptability
+
 The web app is structured modularly for production-grade maintenance:
+
 ```
 project/
 │
@@ -83,6 +97,7 @@ project/
 ├── requirements.txt          # Production environment specifications
 └── README.md                 # System report
 ```
+
 - **Usability & Theme Adaptability**: Custom CSS handles typeface rendering. Instead of hardcoded background colors, metrics panels reference Streamlit’s native CSS variable `var(--secondary-background-color)`. This ensures boxes render with high contrast and readable text in both the default Dark and Light/White themes.
 
 ---
@@ -90,22 +105,31 @@ project/
 ## ⚙️ Setup and Deployment
 
 ### 1. Environment Setup
+
 We recommend using Python 3.10. Install all system dependencies specified in `requirements.txt`:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 2. Run the Application
+
 Run the Streamlit server from the root directory:
+
 ```bash
 streamlit run app.py
 ```
+
 Open your web browser and navigate to `http://localhost:8501`.
 
 ### 3. Model Retraining (Optional)
+
 The application loads pre-trained model artifacts from the `models/` directory on startup. If you need to retrain or modify the underlying machine learning logic, you can execute the exploratory notebook:
+
 ```bash
 jupyter nbconvert --to notebook --execute analysis.ipynb
 ```
+
 *Note: Do not call `.fit()` or modify models during live app sessions.*
+
 # Sales-Forecasting
