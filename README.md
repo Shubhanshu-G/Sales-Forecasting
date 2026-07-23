@@ -1,8 +1,8 @@
 # Superstore Sales Performance & Demand Forecasting Dashboard
 
-[🚀 Live Demo on Streamlit](https://slaesforecasting.streamlit.app/)
+[Live Demo](https://slaesforecasting.streamlit.app/)
 
-An end-to-end operational sales intelligence and demand forecasting pipeline for a commercial retail superstore. This system converts historical transaction records (train.csv) into a modular, production-ready Streamlit analytics application.
+An end-to-end operational sales intelligence and demand forecasting pipeline for a commercial retail superstore. This system converts historical transaction records (train.csv) into a modular, production-ready Streamlit analytics application, containerized with Docker for portable deployment.
 
 ---
 
@@ -14,7 +14,7 @@ This project addresses these challenges by applying statistical decomposition, m
 
 ---
 
-## 📋 Evaluation Criteria & System Implementation
+## Evaluation Criteria & System Implementation
 
 ### 1. Time Series Analysis & Decomposition
 
@@ -95,14 +95,42 @@ project/
 ├── charts/                   # Pre-rendered static analysis plots
 ├── train.csv                 # Core transaction dataset
 ├── requirements.txt          # Production environment specifications
+├── Dockerfile                # Container build definition
+├── .dockerignore             # Files excluded from the Docker build context
 └── README.md                 # System report
 ```
 
-- **Usability & Theme Adaptability**: Custom CSS handles typeface rendering. Instead of hardcoded background colors, metrics panels reference Streamlit’s native CSS variable `var(--secondary-background-color)`. This ensures boxes render with high contrast and readable text in both the default Dark and Light/White themes.
+- **Usability & Theme Adaptability**: Custom CSS handles typeface rendering. Instead of hardcoded background colors, metrics panels reference Streamlit's native CSS variable `var(--secondary-background-color)`. This ensures boxes render with high contrast and readable text in both the default Dark and Light/White themes.
 
 ---
 
-## ⚙️ Setup and Deployment
+## Docker Deployment
+
+The application is fully containerized using a `Dockerfile` and `.dockerignore`.
+
+Docker Hub repository: [dropper135/sales-forecasting-app](https://hub.docker.com/repository/docker/dropper135/sales-forecasting-app/general)
+
+### Pull the Docker Image
+
+```bash
+docker pull dropper135/sales-forecasting-app:latest
+```
+
+### Run the Container
+
+```bash
+docker run -p 8501:8501 dropper135/sales-forecasting-app:latest
+```
+
+Open your browser and navigate to:
+
+```
+http://localhost:8501
+```
+
+---
+
+## Local Setup (Without Docker)
 
 ### 1. Environment Setup
 
@@ -131,5 +159,7 @@ jupyter nbconvert --to notebook --execute analysis.ipynb
 ```
 
 *Note: Do not call `.fit()` or modify models during live app sessions.*
+
+---
 
 # Sales-Forecasting
